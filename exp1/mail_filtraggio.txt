@@ -1,0 +1,38 @@
+ Dear Ilaria, Andrea and Manuele:
+>>  Authors agree about categorizing the sources in a soundscape into  
+>> biophony, geophony and anthrophony. Regarding the range of frequencies  
+>> associated to the human-generated (anthrophony) sounds and those  
+>> related to biological (biophony) ones, Bradfer‐Lawrence et al. [2019]  
+>> say that there is "a theoretical frequency split between anthrophony  
+>> (1–2 kHz) and biophony (2–11 kHz)". However, Kasten et al. [2012]  
+>> consider a smaller frequency band for the biophony, namely from 2 to 8  
+>> kHz.
+>>  Geophony, in contrast, may occur in both of the above-mentioned  
+>> frequency ranges; about that, Pijanowski et al. [2011] say that sounds  
+>> of rain, wind and running water may cover frequencies from 0.1 to 1 kHz  
+>> for little rain, but may go up "to 8 kHz for windy or moderate to heavy  
+>> rain".
+>>  According to that, my suggestion for a simple filtering would be  
+>> removing the lowest and highest bands, such that features and the  
+>> subsequent 1-NN classification is performed only for the biophony as  
+>> defined by Kasten et al. [2012], i.e. for the rows of the spectrogram  
+>> associated to the range from 2 to 8 kHz. Depending of the results,  
+>> other bands might be considered if we are interested in distinguishing  
+>> times and places in other terms (for instance, based on human-generated  
+>> sounds).
+>>  References:
+>> [Bradfer‐Lawrence et al., 2019] Guidelines for the use of acoustic  
+>> indices in environmental research, Tom Bradfer-Lawrence, Nick Gardner,  
+>> Lynsey Bunnefeld, Nils Bunnefeld, Stephen G. Willis and Daisy H. Dent  
+>> (2019), in: Methods in Ecology and Evolution, 10:10(1796-1807). DOI:  
+>> https://doi.org/10.1111/2041-210x.13254
+>>  [Kasten et al., 2012] The remote environmental assessment laboratory's  
+>> acoustic library: An archive for studying soundscape ecology, Eric P.  
+>> Kasten, Stuart H. Gage, Jordan Fox and Wooyeong Joo (2012), in:  
+>> Ecological Informatics, 12(50-67). DOI:  
+>> https://doi.org/10.1016/j.ecoinf.2012.08.001
+>>  [Pijanowski et al., 2011] Soundscape Ecology: The Science of Sound in  
+>> the Landscape, Bryan C. Pijanowski, Luis J. Villanueva-Rivera, Sarah L.  
+>> Dumyahn, Almo Farina, Bernie L. Krause, Brian M. Napoletano, Stuart H.  
+>> Gage and Nadia Pieretti (2011), in: BioScience, 61:3(203-216). DOI:  
+>> https://doi.org/10.1525/bio.2011.61.3.6
