@@ -1,4 +1,6 @@
-downloadAllOfYats/datasetAll
+resources/
+downloadAllAudible/datasetAll/YAT1Audible/
+downloadAllAudible/datasetAll/YAT2Audible/
+downloadAllAudible/datasetAll/YAT3Audible/
 exp1/datasetDN/
 exp2/datasetDN/
-

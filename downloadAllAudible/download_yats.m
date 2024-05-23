@@ -2,16 +2,16 @@ clc; clear all; close all;
 
 
 % -----  CONFIGURATION  -----------------------------
-
-scriptFileName = 'download_yats.sh';
+id="yats";
+scriptFileName = strcat('download_',id,'.sh');
 url = 'http://colecciones.humboldt.org.co/rec/sonidos/publicaciones/MAP/JDT-Yataros';
 downloadDir = './datasetAll/';
 limitRate = 0; % 0 no limits
-parallelThreads = 100;
-logFileName = "download_yats.log";
+parallelThreads = 30;
+logFileName = strcat('download_',id,'.log');
 
 % filters: if empty all of types
-yats = ["YAT1Audible", "YAT2Audible", "YAT3Audible"];
+yats = ["YAT1Audible","YAT2Audible","YAT3Audible"];
 years = []; %["2020"];
 days = []; %[1:31];
 months = []; % ["3","4","5"];
