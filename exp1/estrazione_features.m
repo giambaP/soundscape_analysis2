@@ -55,13 +55,13 @@ for fs = fss
                         labels(counterRow) = YAT;
                         %load the audio
 
-                    iBlockLength = 4096 * 8;
-                    iHopLength = 2048 * 8;
+                        iBlockLength = 4096 * 8;
+                        iHopLength = 2048 * 8;
 
-                    [y, f_s] = audioread(audioName);
-                    [X, f, t] = ComputeSpectrogram(y, f_s, [], iBlockLength, iHopLength);
+                        [y, f_s] = audioread(audioName);
+                        [X, f, t] = ComputeSpectrogram(y, f_s, [], iBlockLength, iHopLength);
 
-                    switch fs
+                        switch fs
                             case 1
                                 fsval = FeatureSpectralCentroid(X, f_s);
                             case 2
@@ -76,7 +76,7 @@ for fs = fss
                                 fsval = FeatureSpectralRolloff(X, f_s);
                             case 7
                                 fsval = FeatureSpectralSpread(X, f_s);
-                            case 8
+                             case 8
                                 fsval = FeatureSpectralTonalPowerRatio(X, f_s);
                             case 9
                                 fsval = FeatureTimeZeroCrossingRate(y, iBlockLength, iHopLength, f_s);
@@ -85,14 +85,14 @@ for fs = fss
                             case 11
                                 fsval = FeatureTimeMaxAcf(y, iBlockLength, iHopLength, f_s);
                             case 12
-                                fsMfcc = FeatureSpectralMfccs(X, f_s); 
-                    end
-                    if(fs ~= 12)
-                       featuresSet(counterRow,:) = fsval;
-                    else
-                       MfccsSet = [MfccsSet fsMfcc];
-                    end
-                       counterRow = counterRow + 1;
+                                fsMfcc = FeatureSpectralMfccs(X, f_s);
+                        end
+                        if(fs ~= 12)
+                            featuresSet(counterRow,:) = fsval;
+                        else
+                            MfccsSet = [MfccsSet fsMfcc];
+                        end
+                        counterRow = counterRow + 1;
                     end
                 end
             end
@@ -105,8 +105,8 @@ for fs = fss
     else
         load(sname);
     end
-        if(fs ~= 12)
-            data = [data featuresSet];
-            save('./templatesYAT/matriceYAT.mat', 'data', 'labels')
-        end
+    if(fs ~= 12)
+        data = [data featuresSet];
+        save('./templatesYAT/matriceYAT.mat', 'data', 'labels')
+    end
 end
