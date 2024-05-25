@@ -13,23 +13,23 @@ nomefs{8} = 'SpectralTonalPowerRatio';
 nomefs{9} = 'TimeZeroCrossingRate';
 nomefs{10} = 'TimeAcfCoeff';
 nomefs{11} = 'TimeMaxAcf';
-nomefs{12} = 'SpectralMfccs';
-fss = 1:12;
+%nomefs{12} = 'SpectralMfccs';
+
+featuresCount = length(nomefs);
 
 nomeexp = './templatesYAT/PrimoExp';
 
-data = [];
 MfccsSet = [];
 
-for fs = fss
-    fprintf('Extracting Feature %s\n',nomefs{fs});
+% generating mat per feature
+for fs=1:featuresCount
+    fprintf('Creating feature %s \n', nomefs{fs});
     sname = strcat(nomeexp,'_',nomefs{fs},'.mat');
-    if exist(sname, "file")
-        load(sname);
-    else        
+    if ~exist(sname, "file")     
         counterRow = 1;
         clear featuresSet
         clear labels
+
         for YAT = 1:3
             fprintf('Extracting YAT %d\n',YAT);
             %audio per days
@@ -48,12 +48,13 @@ for fs = fss
                     else
                         nm = strcat(nm,'_',num2str(j),'0000.WAV');
                     end
-                    fprintf('%d) %s\n',counterRow,nm);
-                    A = exist(strcat('./databaseYAT/YAT', num2str(YAT),'Audible/',nm));
-                    if A
+                    fprintf('%d) %s\n', counterRow, nm);
+
+                    templateName = strcat('./databaseYAT/YAT', num2str(YAT),'Audible/',nm);
+                    if exist(templateName, "file")
+
                         audioName =  strcat('./databaseYAT/YAT',num2str(YAT),'Audible/',nm);
                         labels(counterRow) = YAT;
-                        %load the audio
 
                         iBlockLength = 4096 * 8;
                         iHopLength = 2048 * 8;
@@ -103,8 +104,47 @@ for fs = fss
             save(sname, 'MfccsSet', 'labels');
         end
     end
-    if(fs ~= 12)
-        data = [data featuresSet];
-        save('./templatesYAT/matriceYAT.mat', 'data', 'labels')
+end
+
+data = [];
+% concating all feature horizontally 
+for fs=1:featuresCount
+    clear featuresSet
+    clear labels
+
+    featureName = nomefs{fs};
+    fprintf('Creating feature %s \n', featureName);
+
+    templateName = sprintf("%s_%s.mat", nomeexp, featureName);
+    if ~exist(templateName, "file")
+        error("feature file not exist: feature '%s'\n", featureName);
+    end
+    load(templateName);
+    
+    data = [data featuresSet];
+    save('./templatesYAT/matriceYAT.mat', 'data', 'labels');
+end
+
+%% checking compatibility
+disp("");
+disp("-----  CHECKING COMPATIBILITY ----");
+dirTemplateNew = "./templatesYAT";
+dirTemplateOriginal = "./templateYAT_ORIG";
+d = dir(dirTemplateOriginal);
+for i=1:length(d)
+    fileName = d(i).name;
+    fprintf("%d. checking file %s", i, fileName);
+
+    origFilePath = sprintf("./%s/%s", dirTemplateOriginal, fileName);
+    newFilePath = sprintf("./%s/%s", dirTemplateNew, fileName);
+    if ~exist(newFilePath , "file")
+        error("feature file not exist final path: feature '%s'\n", featureName);
+    else 
+        orig = fread(origFilePath);
+        new = fread(newFilePath);
+        if (orig ~= new)
+            error("feature content is different: orig file '%s', new file '%s' \n", ...
+                fileName);
+        end
     end
 end

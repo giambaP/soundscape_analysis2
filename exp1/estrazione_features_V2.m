@@ -13,23 +13,24 @@ nomefs{8} = 'SpectralTonalPowerRatio';
 nomefs{9} = 'TimeZeroCrossingRate';
 nomefs{10} = 'TimeAcfCoeff';
 nomefs{11} = 'TimeMaxAcf';
-nomefs{12} = 'SpectralMfccs';
-fss = 1:12;
+%nomefs{12} = 'SpectralMfccs';
+
+featuresCount = length(nomefs);
 
 nomeexp = './templatesYAT/PrimoExp';
 
-data = [];
-MfccsSet = [];
+% generating mat per feature
+for fs=1:featuresCount
+    featureName = nomefs{fs};
+    fprintf('Creating feature %s \n', featureName);
 
-for fs = fss
-    fprintf('Extracting Feature %s\n',nomefs{fs});
-    sname = strcat(nomeexp,'_',nomefs{fs},'.mat');
-    if exist(sname, "file")
-        load(sname);
-    else        
+    templateName = sprintf("%s_%s.mat", nomeexp, featureName);
+    if ~exist(templateName, "file")
         counterRow = 1;
+
         clear featuresSet
         clear labels
+
         for YAT = 1:3
             fprintf('Extracting YAT %d\n',YAT);
             %audio per days
@@ -48,12 +49,11 @@ for fs = fss
                     else
                         nm = strcat(nm,'_',num2str(j),'0000.WAV');
                     end
-                    fprintf('%d) %s\n',counterRow,nm);
-                    A = exist(strcat('./databaseYAT/YAT', num2str(YAT),'Audible/',nm));
-                    if A
-                        audioName =  strcat('./databaseYAT/YAT',num2str(YAT),'Audible/',nm);
+                    fprintf('%d) %s\n', counterRow, nm);
+
+                    audioName = strcat('./databaseYAT/YAT', num2str(YAT),'Audible/',nm);
+                    if exist(audioName, "file")
                         labels(counterRow) = YAT;
-                        %load the audio
 
                         iBlockLength = 4096 * 8;
                         iHopLength = 2048 * 8;
@@ -76,7 +76,7 @@ for fs = fss
                                 fsval = FeatureSpectralRolloff(X, f_s);
                             case 7
                                 fsval = FeatureSpectralSpread(X, f_s);
-                             case 8
+                            case 8
                                 fsval = FeatureSpectralTonalPowerRatio(X, f_s);
                             case 9
                                 fsval = FeatureTimeZeroCrossingRate(y, iBlockLength, iHopLength, f_s);
@@ -97,14 +97,63 @@ for fs = fss
                 end
             end
         end
-        if(fs ~= 12)
-            save(sname,'featuresSet','labels');
-        else
-            save(sname, 'MfccsSet', 'labels');
-        end
+        save(sname,'featuresSet','labels');
     end
-    if(fs ~= 12)
-        data = [data featuresSet];
-        save('./templatesYAT/matriceYAT.mat', 'data', 'labels')
+end
+
+data = [];
+% concating all feature horizontally
+for fs=1:featuresCount
+    clear featuresSet
+    clear labels
+
+    featureName = nomefs{fs};
+    fprintf('Creating feature %s \n', featureName);
+
+    templateName = sprintf("%s_%s.mat", nomeexp, featureName);
+    if ~exist(templateName, "file")
+        error("feature file not exist: feature '%s'\n", featureName);
+    end
+    load(templateName);
+
+    data = [data featuresSet];
+    save('./templatesYAT/matriceYAT.mat', 'data', 'labels');
+end
+
+%% checking compatibility
+disp("");
+disp("-----  CHECKING COMPATIBILITY ----");
+dirTemplateNew = "./templatesYAT";
+dirTemplateOriginal = "./templatesYAT_ORIG";
+fileList = dir(dirTemplateOriginal);
+fileList = fileList(~[fileList.isdir]);
+for i=1:length(fileList)
+    fileName = fileList(i, :).name;
+    fprintf("%d. checking file %s\n", i, fileName);
+
+    origFilePath = sprintf("%s/%s", dirTemplateOriginal, fileName);
+    newFilePath = sprintf("%s/%s", dirTemplateNew, fileName);
+    if ~exist(newFilePath , "file")
+        error("feature file not exist final path: feature '%s'\n", featureName);
+    else
+        data1 = load(origFilePath);
+        data2 = load(newFilePath);
+
+        fields1 = fieldnames(data1);
+        fields2 = fieldnames(data2);
+
+        if ~isequal(fields1, fields2)
+            error("feature content files are different: file '%s', field '%s'", fileName, fields1);
+        else
+            isEqual = true;
+            for j = 1:length(fields1)
+                d1 = data1.(fields1{j});
+                d2 = data2.(fields2{j});
+                if ~isequal(d1, d2)
+                    error("feature content fields are different: file '%s', field '%s', posJ:'%d'", ...
+                        fileName, fields1{j}, j);
+                end
+            end
+        end
     end
 end
